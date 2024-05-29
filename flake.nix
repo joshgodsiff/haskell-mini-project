@@ -32,6 +32,8 @@
             ghc
             haskell-language-server
             hlint
+            zlib
+            pkgs.zlib
           ];
         };
       });
