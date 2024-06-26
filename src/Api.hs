@@ -1,3 +1,7 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE OverloadedStrings #-}
+
 module Api where
 
 import Servant
@@ -5,27 +9,39 @@ import Types
 
 type Todos = "todos" :> Get '[JSON] [Todo]
 
-type Todo = 
-  "todo" 
+type TodoGet = 
+  "todo"
     :> Capture "id" Int 
     :> Get '[JSON] (Maybe Todo)
-  :<|>
-    "todo" 
-      :> Capture "id" Int
-      :> Post '[JSON] PostNoContent
+  
 
-type TodoApi = Todos :<|> Todo
+type TodoPost = 
+  "todo" 
+    :> Capture "id" Int
+    :> ReqBody '[JSON] Todo
+    :> PostNoContent
 
+type TodosApi = Todos :<|> TodoGet
+
+dummyTodos :: [Todo]
 dummyTodos = [
     Todo 1 "Finish this tutorial" False,
     Todo 2 "Finish this tutorial again" False
   ]
 
-server1 :: Server TodoApi
-server1 = pure todosHandler
+server1 :: Server TodosApi
+server1
+  =    todosHandler
+  :<|> todoGetHandler
 
-todosHandler :: Monad m => m [Todo]
-todosHandler = return dummyTodos
+todosHandler :: Handler [Todo]
+todosHandler = pure dummyTodos
+
+todoGetHandler :: Int -> Handler (Maybe Todo)
+todoGetHandler id' = pure $ dummyTodos !? id'
+
+todoPutHandler :: Int -> Todo -> Handler PostNoContent
+todoPutHandler _ = error ""  -- dummy implementation
 
 (!?) :: [a] -> Int -> Maybe a
 {-# INLINABLE (!?) #-}
@@ -37,10 +53,7 @@ xs !? n
 
 infixl 9  !?
 
-getTodoHandler :: Int -> Maybe Todo
-getTodoHandler id = dummyTodos !? id
-
-todoApiProxy :: Proxy TodoApi
+todoApiProxy :: Proxy TodosApi
 todoApiProxy = Proxy
 
 app1 :: Application

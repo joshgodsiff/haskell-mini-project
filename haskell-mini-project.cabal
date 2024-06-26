@@ -100,9 +100,10 @@ executable haskell-mini-project
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:
-        base,
-        haskell-mini-project
+    build-depends:  base
+        , haskell-mini-project
+        , wai              ^>= 3.2.3
+        , warp             ^>= 3.3.21
 
     -- Directories containing source files.
     hs-source-dirs:   exe
