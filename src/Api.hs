@@ -27,6 +27,16 @@ server1 = pure todosHandler
 todosHandler :: Monad m => m [Todo]
 todosHandler = return dummyTodos
 
+(!?) :: [a] -> Int -> Maybe a
+{-# INLINABLE (!?) #-}
+xs !? n
+  | n < 0     = Nothing
+  | otherwise = foldr (\x r k -> case k of
+                                   0 -> Just x
+                                   _ -> r (k-1)) (const Nothing) xs n
+
+infixl 9  !?
+
 getTodoHandler :: Int -> Maybe Todo
 getTodoHandler id = dummyTodos !? id
 
