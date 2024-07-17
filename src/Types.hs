@@ -4,8 +4,8 @@
 module Types where
 
 import Data.Aeson
-import Data.Aeson.Types
 import GHC.Generics
+import Database.SQLite.Simple (field, FromRow (..), ToRow (..))
 
 import qualified Data.Text as T
 
@@ -19,3 +19,9 @@ data Todo
 
 instance ToJSON Todo
 instance FromJSON Todo
+
+instance FromRow Todo where
+  fromRow = Todo <$> field <*> field <*> field
+
+instance ToRow Todo where
+  toRow (Todo id' title completed) = toRow (id', title, completed)
