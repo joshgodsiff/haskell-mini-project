@@ -9,7 +9,6 @@ import Types
 import Db (openDb, readAllTodos, readOneTodo, readOneTodo)
 import Control.Monad.IO.Class (liftIO)
 
-
 type Todos = "todos" :> Get '[JSON] [Todo]
 
 type TodoGet = 
