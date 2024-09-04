@@ -6,6 +6,9 @@ module Api where
 
 import Servant
 import Types
+import Db (openDb, readAllTodos, readOneTodo, readOneTodo)
+import Control.Monad.IO.Class (liftIO)
+
 
 type Todos = "todos" :> Get '[JSON] [Todo]
 
@@ -21,7 +24,7 @@ type TodoPost =
     :> ReqBody '[JSON] Todo
     :> PostNoContent
 
-type TodosApi = Todos :<|> TodoGet
+type TodosApi = Todos :<|> TodoGet :<|> TodoPost
 
 dummyTodos :: [Todo]
 dummyTodos = [
@@ -33,12 +36,17 @@ server1 :: Server TodosApi
 server1
   =    todosHandler
   :<|> todoGetHandler
+  :<|> todoPutHandler
 
 todosHandler :: Handler [Todo]
-todosHandler = pure dummyTodos
+todosHandler = liftIO $ do
+  db <- openDb
+  readAllTodos db
 
 todoGetHandler :: Int -> Handler (Maybe Todo)
-todoGetHandler id' = pure $ dummyTodos !? id'
+todoGetHandler id' = liftIO $ do
+  db <- openDb
+  readOneTodo db id'
 
 todoPutHandler :: Int -> Todo -> Handler PostNoContent
 todoPutHandler _ = error ""  -- dummy implementation
