@@ -24,7 +24,7 @@ type TodoPost =
     :> ReqBody '[JSON] Todo
     :> PostNoContent
 
-type TodosApi = Todos :<|> TodoGet :<|> TodoPost
+type TodosApi = Todos :<|> TodoGet
 
 dummyTodos :: [Todo]
 dummyTodos = [
@@ -36,7 +36,6 @@ server1 :: Server TodosApi
 server1
   =    todosHandler
   :<|> todoGetHandler
-  :<|> todoPutHandler
 
 todosHandler :: Handler [Todo]
 todosHandler = liftIO $ do
